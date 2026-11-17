@@ -25,17 +25,15 @@ scene.add(dirLight);
 // 3. Shahar ko'chalari va binolarini generatsiya qilish
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(1000, 1000),
-  new THREE.MeshStandardMaterial({ color: 0x2e7d32 }) // Yashil maysa
+  new THREE.MeshStandardMaterial({ color: 0x2e7d32 })
 );
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
 
 const roadMat = new THREE.MeshStandardMaterial({ color: 0x262626 });
-const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 const buildingColors = [0xd1d5db, 0xfde68a, 0xbae6fd, 0xfecaca, 0xe5e7eb];
 
-// Kvadrat shahar kvartallari va asfalt yo'llar
 for (let x = -240; x <= 240; x += 60) {
   const roadZ = new THREE.Mesh(new THREE.PlaneGeometry(14, 600), roadMat);
   roadZ.rotation.x = -Math.PI / 2;
@@ -48,10 +46,9 @@ for (let x = -240; x <= 240; x += 60) {
   scene.add(roadX);
 }
 
-// Kvartallar ichiga binolar qo'yish
 for (let x = -210; x <= 210; x += 60) {
   for (let z = -210; z <= 210; z += 60) {
-    if (Math.abs(x) < 40 && Math.abs(z) < 40) continue; // Markaziy yo'l bo'sh tursin
+    if (Math.abs(x) < 40 && Math.abs(z) < 40) continue;
     const h = 12 + Math.random() * 28;
     const bMat = new THREE.MeshStandardMaterial({
       color: buildingColors[Math.floor(Math.random() * buildingColors.length)]
@@ -64,7 +61,7 @@ for (let x = -210; x <= 210; x += 60) {
   }
 }
 
-// 4. Malibu 3D modelini yuklash
+// 4. Malibu 3D modelini Vercel rewrite orqali yuklash
 const carContainer = new THREE.Group();
 scene.add(carContainer);
 
@@ -75,7 +72,7 @@ loader.load(
   (gltf) => {
     const model = gltf.scene;
 
-    // Model o'lchamini avtomatik normallashtirish (uzunligi ~4.8 metr bo'ladi)
+    // Model o'lchamini avtomatik normallashtirish (uzunligi ~4.8 metr)
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
@@ -87,7 +84,7 @@ loader.load(
     const center = scaledBox.getCenter(new THREE.Vector3());
     model.position.set(-center.x, -scaledBox.min.y, -center.z);
 
-    // G'ildirak tugunlarini topish (aylantirish uchun)
+    // G'ildirak tugunlarini topish
     model.traverse((child) => {
       if (child.name.toLowerCase().includes('wheel')) {
         wheels.push(child);
@@ -101,10 +98,13 @@ loader.load(
     if (xhr.total) {
       const percent = Math.round((xhr.loaded / xhr.total) * 100);
       document.getElementById('progress').innerText = percent + '%';
+    } else {
+      const mb = (xhr.loaded / (1024 * 1024)).toFixed(1);
+      document.getElementById('progress').innerText = mb + ' MB / 46.2 MB yuklanmoqda...';
     }
   },
   (err) => {
-    document.getElementById('progress').innerText = 'Xatolik: malibu.glb topilmadi!';
+    document.getElementById('progress').innerText = 'Xatolik: ' + err.message;
     console.error(err);
   }
 );
@@ -114,6 +114,7 @@ const keys = { forward: false, backward: false, left: false, right: false };
 
 const bindBtn = (id, key) => {
   const el = document.getElementById(id);
+  if (!el) return;
   el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; });
   el.addEventListener('touchend', (e) => { e.preventDefault(); keys[key] = false; });
   el.addEventListener('mousedown', () => keys[key] = true);
@@ -146,35 +147,31 @@ const speedEl = document.getElementById('speed');
 function animate() {
   requestAnimationFrame(animate);
 
-  // Gaz va tormoz
   if (keys.forward) {
     speed = Math.min(speed + 0.015, maxSpeed);
   } else if (keys.backward) {
     speed = Math.max(speed - 0.025, -0.35);
   } else {
-    speed *= 0.97; // Tabiiy sekinlashish
+    speed *= 0.97;
   }
 
-  // Rul boshqaruvi (faqat mashina harakatlanayotganda buriladi)
   if (Math.abs(speed) > 0.01) {
     const dir = speed > 0 ? 1 : -1;
     if (keys.left) carContainer.rotation.y += 0.032 * dir;
     if (keys.right) carContainer.rotation.y -= 0.032 * dir;
   }
 
-  // Mashinani oldinga siljitish
   carContainer.position.x += Math.sin(carContainer.rotation.y) * speed;
   carContainer.position.z += Math.cos(carContainer.rotation.y) * speed;
 
-  // G'ildiraklarni aylantirish
   wheels.forEach((w) => {
     w.rotation.x += speed * 0.8;
   });
 
-  // Spidometrni yangilash
-  speedEl.innerText = Math.abs(Math.round(speed * 180));
+  if (speedEl) {
+    speedEl.innerText = Math.abs(Math.round(speed * 180));
+  }
 
-  // Kamera mashina ortidan silliq ergashadi
   const idealOffset = new THREE.Vector3(0, 3.4, -7.8);
   idealOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), carContainer.rotation.y);
   idealOffset.add(carContainer.position);
@@ -193,4 +190,3 @@ window.addEventListener('resize', () => {
 });
 
 animate();
-  
