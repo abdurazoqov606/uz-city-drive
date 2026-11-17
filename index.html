@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Uzbek City Drive - Malibu</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+    body { overflow: hidden; background: #87CEEB; font-family: sans-serif; }
+    #loading {
+      position: fixed; inset: 0; background: #111; color: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+    }
+    #hud {
+      position: fixed; top: 15px; left: 15px; color: #fff;
+      background: rgba(0,0,0,0.5); padding: 10px 16px; border-radius: 12px; font-size: 18px; font-weight: bold;
+    }
+    .controls {
+      position: fixed; bottom: 25px; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; pointer-events: none;
+    }
+    .btn-group { display: flex; gap: 15px; pointer-events: auto; }
+    button {
+      width: 72px; height: 72px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6);
+      background: rgba(0, 0, 0, 0.45); color: white; font-size: 24px; font-weight: bold;
+      backdrop-filter: blur(4px); touch-action: manipulation;
+    }
+    button:active { background: rgba(255, 255, 255, 0.35); transform: scale(0.95); }
+    #gas { background: rgba(16, 185, 129, 0.55); height: 85px; }
+    #brake { background: rgba(239, 68, 68, 0.55); height: 65px; align-self: flex-end; }
+    #credit { position: fixed; bottom: 5px; width: 100%; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <h2>Malibu yuklanmoqda...</h2>
+    <p id="progress" style="margin-top:10px; color:#38bdf8;">0%</p>
+  </div>
+
+  <div id="hud">Tezlik: <span id="speed">0</span> km/soat</div>
+
+  <div class="controls">
+    <div class="btn-group">
+      <button id="left">◀</button>
+      <button id="right">▶</button>
+    </div>
+    <div class="btn-group">
+      <button id="brake">Tormoz</button>
+      <button id="gas">GAZ</button>
+    </div>
+  </div>
+
+  <div id="credit">3D Model: 2019 Chevrolet Malibu LS Sedan by Ddiaz Design (CC BY-NC-SA)</div>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
