@@ -68,7 +68,7 @@ scene.add(carContainer);
 let wheels = [];
 const loader = new GLTFLoader();
 loader.load(
-  '/api/malibu',
+  '/malibu.glb',
   (gltf) => {
     const model = gltf.scene;
 
