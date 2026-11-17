@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/malibu.glb",
-      "destination": "https://github.com/abdurazoqov606/uz-city-drive/releases/download/v1.0/malibu.glb"
-    }
-  ]
-}
